@@ -1,0 +1,18 @@
+{
+  "schema_version": "v1",
+  "name_for_model": "openSourceKB",
+  "name_for_human": "Open Source Knowlage Base",
+  "description_for_model": "Plugin for write and read Open Source Knowlage.",
+  "description_for_human": "Plugin for write and read Open Source Knowlage.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "http://{{host}}:{{port}}/.well-known/openapi.yaml",
+    "has_user_authentication": false
+  },
+  "logo_url": "http://{{host}}:{{port}}/.well-known/icon.png",
+  "contact_email": "hello@contact.com",
+  "legal_info_url": "http://example.com/legal-info"
+}

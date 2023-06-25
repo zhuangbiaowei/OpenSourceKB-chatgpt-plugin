@@ -1,0 +1,11 @@
+openapi: 3.0.3
+info:
+  title: Open Source Knowlage Base
+  description: Plugin for write and read Open Source Knowlage.
+  version: 1.0.0
+
+servers:
+  - url: http://{{host}}:{{port}}
+
+{{paths}}
+{{components}}
