@@ -14,9 +14,17 @@ CREATE TABLE orgBehavior (
  
 # List all org behaviors
 get '/orgBehaviors' do  
-    all_org_behaviors = OrgBehavior.all.collect { |p|
-        p.values
-    }
+    page = params['page']
+    if page
+        page = page.to_i
+        all_org_behaviors = OrgBehavior.all[(page-1)*10..page*10-1].collect { |p|
+            p.values
+        }
+    else
+        all_org_behaviors = OrgBehavior.all.collect { |p|
+            p.values
+        }
+    end
     status 200
     all_org_behaviors.to_json
 end
@@ -59,6 +67,12 @@ path_yaml = <<-CONFIG
     get:
       summary: Get all org behaviors
       operationId: getOrgBehaviors
+      parameters:
+        - name: page
+          in: query
+          description: The page number to retrieve. Each page contains 10 items.
+          schema:
+            type: integer
       responses:
         '200':
           description: A list of org behaviors

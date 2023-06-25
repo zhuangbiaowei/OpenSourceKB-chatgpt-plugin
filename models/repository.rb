@@ -14,9 +14,17 @@ CREATE TABLE repository (
  
 # List all open source repositories
 get '/repositories' do  
-    all_repositories = Repository.all.collect { |r|
-        r.values
-    }
+    page = params['page']
+    if page
+        page = page.to_i
+        all_repositories = Repository.all[(page-1)*10..page*10-1].collect { |r|
+            r.values
+        }
+    else
+        all_repositories = Repository.all.collect { |r|
+            r.values
+        }
+    end
     status 200
     all_repositories.to_json
 end
@@ -59,6 +67,12 @@ path_yaml = <<-CONFIG
     get:
       summary: Get all repositories
       operationId: getRepositories
+      parameters:
+        - name: page
+          in: query
+          description: The page number to retrieve. Each page contains 10 items.
+          schema:
+            type: integer
       responses:
         '200':
           description: A list of repositories

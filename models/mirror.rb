@@ -11,9 +11,17 @@ CREATE TABLE mirror (
  
 # List all open source mirrors
 get '/mirrors' do  
-    all_mirrors = Mirror.all.collect { |m|
-        m.values
-    }
+    page = params['page']
+    if page
+        page = page.to_i
+        all_mirrors = Mirror.all[(page-1)*10..page*10-1].collect { |m|
+            m.values
+        }
+    else
+        all_mirrors = Mirror.all.collect { |m|
+            m.values
+        }
+    end
     status 200
     all_mirrors.to_json
 end
@@ -56,6 +64,12 @@ path_yaml = <<-CONFIG
     get:
       summary: Get all mirrors
       operationId: getMirrors
+      parameters:
+        - name: page
+          in: query
+          description: The page number to retrieve. Each page contains 10 items.
+          schema:
+            type: integer
       responses:
         '200':
           description: A list of mirrors

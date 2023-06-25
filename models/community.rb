@@ -15,10 +15,18 @@ CREATE TABLE community (
 =end
 
 # List all open source communities
-get '/communities' do  
-    all_communities = Community.all.collect { |c|
-        c.values
-    }
+get '/communities' do
+    page = params['page']
+    if page
+        page = page.to_i
+        all_communities = Community.all[(page-1)*10..page*10-1].collect { |c|
+            c.values
+        }
+    else
+        all_communities = Community.all.collect { |c|
+            c.values
+        }
+    end
     status 200
     all_communities.to_json
 end
@@ -61,6 +69,12 @@ path_yaml = <<-CONFIG
     get:
       summary: Get all communities
       operationId: getCommunities
+      parameters:
+        - name: page
+          in: query
+          description: The page number to retrieve. Each page contains 10 items.
+          schema:
+            type: integer
       responses:
         '200':
           description: A list of communities

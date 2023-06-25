@@ -1,8 +1,16 @@
 # List all People Events
 get '/peopleEvents' do
-    all_people_events = PeopleEvent.all.collect { |pe|
-        pe.values
-    }
+    page = params['page']
+    if page
+        page = page.to_i
+        all_people_events = PeopleEvent.all[(page-1)*10..page*10-1].collect { |pe|
+           pe.values
+        }
+    else
+        all_people_events = PeopleEvent.all.collect { |pe|
+           pe.values
+        }
+    end
     status 200
     all_people_events.to_json
 end
@@ -45,6 +53,12 @@ path_yaml = <<-CONFIG
     get:
       summary: Get all people events
       operationId: getPeopleEvents
+      parameters:
+        - name: page
+          in: query
+          description: The page number to retrieve. Each page contains 10 items.
+          schema:
+            type: integer
       responses:
         '200':
           description: A list of people events

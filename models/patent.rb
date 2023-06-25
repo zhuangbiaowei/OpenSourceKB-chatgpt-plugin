@@ -12,9 +12,17 @@ CREATE TABLE patent (
  
 # List all patents
 get '/patents' do  
-    all_patents = Patent.all.collect { |p|
-        p.values
-    }
+    page = params['page']
+    if page
+        page = page.to_i
+        all_patents = Patent.all[(page-1)*10..page*10-1].collect { |p|
+            p.values
+        }
+    else
+        all_patents = Patent.all.collect { |p|
+            p.values
+        }
+    end
     status 200
     all_patents.to_json
 end
@@ -57,6 +65,12 @@ path_yaml = <<-CONFIG
     get:
       summary: Get all patents
       operationId: getPatents
+      parameters:
+        - name: page
+          in: query
+          description: The page number to retrieve. Each page contains 10 items.
+          schema:
+            type: integer
       responses:
         '200':
           description: A list of patents

@@ -10,10 +10,18 @@ CREATE TABLE agreement (
 =end
 
 # List all agreements
-get '/agreements' do  
-    all_agreements = Agreement.all.collect { |a|
+get '/agreements' do
+    page = params['page']
+    if page
+      page = page.to_i
+      all_agreements = Agreement.all[(page-1)*10..page*10-1].collect { |a|
         a.values
-    }
+      }
+    else
+      all_agreements = Agreement.all.collect { |a|
+          a.values
+      }
+    end
     status 200
     all_agreements.to_json
 end
@@ -56,6 +64,12 @@ path_yaml = <<-CONFIG
     get:
       summary: Get all agreements
       operationId: getAgreements
+      parameters:
+        - name: page
+          in: query
+          description: The page number to retrieve. Each page contains 10 items.
+          schema:
+            type: integer
       responses:
         '200':
           description: A list of agreements

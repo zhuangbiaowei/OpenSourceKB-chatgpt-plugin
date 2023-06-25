@@ -16,9 +16,17 @@ CREATE TABLE foundation (
 
 # List all open source foundations
 get '/foundations' do  
-    all_foundations = Foundation.all.collect { |f|
-        f.values
-    }
+    page = params['page']
+    if page
+        page = page.to_i
+        all_foundations = Foundation.all[(page-1)*10..page*10-1].collect { |f|
+            f.values
+        }
+    else
+        all_foundations = Foundation.all.collect { |f|
+            f.values
+        }
+    end
     status 200
     all_foundations.to_json
 end
@@ -61,6 +69,12 @@ path_yaml = <<-CONFIG
     get:
       summary: Get all foundations
       operationId: getFoundations
+      parameters:
+        - name: page
+          in: query
+          description: The page number to retrieve. Each page contains 10 items.
+          schema:
+            type: integer
       responses:
         '200':
           description: A list of foundations

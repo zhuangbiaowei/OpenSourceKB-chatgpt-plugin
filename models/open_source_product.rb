@@ -16,9 +16,17 @@ CREATE TABLE openSourceProduct (
 
 # List all open source products
 get '/openSourceProducts' do  
-    all_products = OpenSourceProduct.all.collect { |p|
-        p.values
-    }
+    page = params['page']
+    if page
+        page = page.to_i
+        all_products = OpenSourceProduct.all[(page-1)*10..page*10-1].collect { |p|
+           p.values
+        }
+    else
+        all_products = OpenSourceProduct.all.collect { |p|
+           p.values
+        }
+    end
     status 200
     all_products.to_json
 end
@@ -61,6 +69,12 @@ path_yaml = <<-CONFIG
     get:
       summary: Get all products
       operationId: getProducts
+      parameters:
+        - name: page
+          in: query
+          description: The page number to retrieve. Each page contains 10 items.
+          schema:
+            type: integer
       responses:
         '200':
           description: A list of products

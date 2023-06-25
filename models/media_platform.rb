@@ -10,9 +10,17 @@ CREATE TABLE mediaPlatform (
  
 # List all media platforms
 get '/mediaPlatforms' do  
-    all_media_platforms = MediaPlatform.all.collect { |mp|
-        mp.values
-    }
+    page = params['page']
+    if page
+        page = page.to_i
+        all_media_platforms = MediaPlatform.all[(page-1)*10..page*10-1].collect { |mp|
+            mp.values
+        }
+    else
+        all_media_platforms = MediaPlatform.all.collect { |mp|
+            mp.values
+        }
+    end
     status 200
     all_media_platforms.to_json
 end
@@ -55,6 +63,12 @@ path_yaml = <<-CONFIG
     get:
       summary: Get all media platforms
       operationId: getMediaPlatforms
+      parameters:
+        - name: page
+          in: query
+          description: The page number to retrieve. Each page contains 10 items.
+          schema:
+            type: integer
       responses:
         '200':
           description: A list of media platforms
